@@ -1,5 +1,6 @@
 package crate.elasticsearch.facet.distinct;
 
+import org.apache.lucene.util.BytesRef;
 import org.elasticsearch.common.bytes.BytesReference;
 import org.elasticsearch.common.bytes.HashedBytesArray;
 import org.elasticsearch.common.io.stream.StreamInput;
@@ -95,7 +96,12 @@ public class StringInternalDistinctDateHistogramFacet extends InternalDistinctDa
             out.writeLong(entry.getTime());
             out.writeVInt(entry.getValues().size());
             for (Object name : entry.getValues()) {
-                out.writeString((String) name);
+            	if(name instanceof String){
+            	    out.writeString((String)name); 		
+            	}else if(name instanceof BytesRef){
+            		out.writeString(((BytesRef) name).utf8ToString());
+            	}
+           
             }
         }
         releaseCache();
